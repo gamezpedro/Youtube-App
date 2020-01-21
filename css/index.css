@@ -1,0 +1,25 @@
+
+img{
+    cursor: pointer;
+}
+
+h2{
+    color: rgb(76, 76, 156);
+}
+
+#Title {
+    cursor: pointer;
+    color: rgb(19, 41, 43);
+}
+
+#Title:hover{
+    text-shadow: 2px 2px 3px;
+}
+
+img:hover{
+    box-shadow: 5px 5px;
+}
+
+body{
+    background-color: rgb(171, 176, 180);
+}
