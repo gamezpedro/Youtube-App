@@ -1,10 +1,6 @@
 
-let url = "https://www.googleapis.com/youtube/v3/search?key=AIzaSyDPkzGh8AonYcel-jq8qknGU4KUFboKfqQ&part=snippet&maxResults=10&q=";
-let prevPage;
-let nextPage;
-let cont = -1;
-
-
+let url = "https://www.googleapis.com/youtube/v3/search?type=video&key=AIzaSyDPkzGh8AonYcel-jq8qknGU4KUFboKfqQ&part=snippet&maxResults=10&q=";
+let key;
 
 function fetchVideos(videoUrl){
 
@@ -12,9 +8,7 @@ function fetchVideos(videoUrl){
     $.ajax({
       url : (videoUrl),  //url endpointToAPI
       method : "GET",
-      data: {},        //info sent to the API
       dataType : "json",  
-      ContentType : "application/json", //Type of data sent in the request
       success : function( responseJSON ){
         displayResults( responseJSON );
       },
@@ -24,24 +18,43 @@ function fetchVideos(videoUrl){
     });
 }
 
-
-
 function displayResults( responseJSON ){
     
     $(".results").empty();
     
-    nextPage = responseJSON.prevPageToken;
-    prevPage = responseJSON.nextPageToken;
-
     for(i = 0; i < responseJSON.pageInfo.resultsPerPage; i++) {
         let youtubeURL = "https://www.youtube.com/watch?v=" + responseJSON.items[i].id.videoId;
         $(".results").append(`
             <h2 id="Title" onclick="openTab('${youtubeURL}')">
             ${responseJSON.items[i].snippet.title}
             </h2>
-            <img src= "${responseJSON.items[i].snippet.thumbnails.default.url}" onclick="openTab('${youtubeURL}')"/>
+            <p>
+              <img src= "${responseJSON.items[i].snippet.thumbnails.default.url}" onclick="openTab('${youtubeURL}')"/>
+            </p>
         `);
     }
+    $(".results").append(`
+      <button id="prevButton"> Prev </button>
+      <button id="nextButton" > Next </button>
+    `
+    );
+    prevNext(responseJSON);
+}
+
+function prevNext(responseJSON){
+  $("#prevButton").on("click", function(e){
+    e.preventDefault();
+    let videoUrl = `https://www.googleapis.com/youtube/v3/search?type=video&pageToken=${responseJSON.prevPageToken}&key=AIzaSyDPkzGh8AonYcel-jq8qknGU4KUFboKfqQ&part=snippet&maxResults=10&q=${key}`;
+    //console.log(videoUrl);
+    fetchVideos(videoUrl);
+  });
+
+  $("#nextButton").on("click", function(e){
+    e.preventDefault();
+    let videoUrl = `https://www.googleapis.com/youtube/v3/search?type=video&pageToken=${responseJSON.nextPageToken}&key=AIzaSyDPkzGh8AonYcel-jq8qknGU4KUFboKfqQ&part=snippet&maxResults=10&q=${key}`;
+    //console.log(videoUrl);
+    fetchVideos(videoUrl);
+  });
 }
 
 
@@ -49,37 +62,18 @@ function watchForm(){
   $("#submitButton").on("click",function(e){
     e.preventDefault();
     cont = 0;
+    key = $("#textInput").val();
     let videoUrl = url + $("#textInput").val();
-    if($("#textInput").val()=="")
+    if($(key)=="")
         {
             alert("You must Submit Keyword to Search")
         }
-        else{
-            $("#textInput").val("");
-            fetchVideos(videoUrl);
-        }
-  });
-
-  $("#prevButton").on("click", function(e){
-    e.preventDefault();
-    let videoUrl = url + $("#textInput").val();
-    if(cont > 0){
-        videoUrl += '&pageToken=' + prevPage;
-        cont--;
+    else{
+      $("#textInput").val("");
+      fetchVideos(videoUrl);
     }
-    fetchVideos(videoUrl);
+    console.log(videoUrl);
   });
-
-  $("#nextButton").on("click", function(e){
-    e.preventDefault();
-    let videoUrl = url + $("#textInput").val();
-    if(cont >= 0){
-        videoUrl += '&pageToken=' + nextPage;
-        cont++;
-    }
-    fetchVideos(videoUrl);
-  });
-
 }
 
 function openTab(youtubeURL){
