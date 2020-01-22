@@ -1,5 +1,5 @@
 <h2>
-     Laboratoy #5 Youtube App 
+     Laboratory #5 Youtube App 
 </h2>
 <h4>
     Pedro Antonio Gamez
